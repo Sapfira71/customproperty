@@ -1,65 +1,77 @@
 <?php
-class CCustomTypeElementDate{
 
-//описываем поведение пользовательского свойства
-    function GetUserTypeDescription() {
+class CCustomTypeDesignerDate
+{
+    function GetUserTypeDescription()
+    {
         return array(
-            'PROPERTY_TYPE'           => 'E',
-            'USER_TYPE'             	=> 'skill',
-            'DESCRIPTION'           	=> 'Квалификация — Дата получения квалификации', //именно это будет выведено в списке типов свойств во вкладке редактирования свойств ИБ
-            //указываем необходимые функции, используемые в создаваемом типе
-            'GetPropertyFieldHtml'  	=> array('CCustomTypeElementDate', 'GetPropertyFieldHtml'),
-            'ConvertToDB'           	=> array('CCustomTypeElementDate', 'ConvertToDB'),
-            'ConvertFromDB'         	=> array('CCustomTypeElementDate', 'ConvertToDB')
+            'PROPERTY_TYPE' => 'S',
+            'USER_TYPE' => 'designerdate',
+            'DESCRIPTION' => 'Р”РёР·Р°Р№РЅРµСЂ Рё РґР°С‚Р° РІС‹РїСѓСЃРєР° РјРѕРґРµР»Рё',
+            'GetPropertyFieldHtml' => array('CCustomTypeDesignerDate', 'GetPropertyFieldHtml'),
+            'ConvertToDB' => array('CCustomTypeDesignerDate', 'ConvertToDB'),
+            'ConvertFromDB' => array('CCustomTypeDesignerDate', 'ConvertFromDB')
         );
     }
-//формируем пару полей для создаваемого свойства
-    function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName) {
-        $ID = intval($_REQUEST['ID']); //
-        //формируем список квалификаций
-        $rsSkills = CIBlockElement::GetList(
-            array("SORT" => "ASC"),
+
+    function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
+    {
+        $value['DESCRIPTION'] = unserialize($value['DESCRIPTION']);
+
+        $designers = CIBlockElement::GetList(
+            array(),
             array(
-                "IBLOCK_ID" => 25, //ИБ Квалификации
-                "ACTIVE"    => "Y"
+                'IBLOCK_ID' => 4,
+                'ACTIVE' => 'Y'
             ),
             false,
             false,
-            array("ID","NAME")
+            array('ID', 'NAME')
         );
-        //формируем селект с опциями — квалификациями
-        $html = '<select name="'.$strHTMLControlName["VALUE"].'">';
-        $html .= '<option value="">(выберите квалификацию)</option>';
-        while ($arSkill = $rsSkills->GetNext()){
-            $html .= '<option value="' .$arSkill["ID"]. '"';
-            if ($arSkill["ID"] == $value["VALUE"]){
-                $html .= 'selected="selected"';
-            }
-            $html .= '>' .$arSkill["NAME"]. '</option>';
-        }
-        $html .= '</select>';
-        echo $html;
-        //формируем поле с датой для дескрипшена
+
+        echo '<div>Р”Р°С‚Р° РІС‹РїСѓСЃРєР° РјРѕРґРµР»Рё: ';
         global $APPLICATION;
         $APPLICATION->IncludeComponent("bitrix:main.calendar","",Array(
                 "SHOW_INPUT" => "Y",
                 "FORM_NAME" => "",
-                "INPUT_NAME" => $strHTMLControlName["DESCRIPTION"],
+                "INPUT_NAME" => $strHTMLControlName['VALUE'],
                 "INPUT_NAME_FINISH" => "",
-                "INPUT_VALUE" => $value["DESCRIPTION"],
+                "INPUT_VALUE" => $value['VALUE'],
                 "INPUT_VALUE_FINISH" => "",
                 "SHOW_TIME" => "N",
                 "HIDE_TIMEBAR" => "Y"
             )
         );
-        echo "<br />";
+        echo '</div><br>';
+
+        $return = '<tr><td>';
+
+        $return .= '<div>Р”РёР·Р°Р№РЅРµСЂ: <select name="'.$strHTMLControlName['DESCRIPTION'] . '[NAME]">';
+        $return .= '<option value="">(РІС‹Р±РµСЂРёС‚Рµ РєРІР°Р»РёС„РёРєР°С†РёСЋ)</option>';
+        while ($designer = $designers->GetNext()){
+            $return .= '<option value="' .$designer["ID"]. '"';
+            if ($designer["ID"] == $value['DESCRIPTION']['NAME']){
+                $return .= 'selected="selected"';
+            }
+            $return .= '>' .$designer["NAME"]. '</option>';
+        }
+        $return .= '</select></div><br>';
+
+        $return .= '<div>Р‘СЂРµРЅРґ: <input type="text" size="30" name="' . $strHTMLControlName['DESCRIPTION'] . '[BRAND]" value="' . $value['DESCRIPTION']['BRAND'] . '" ></div>';
+
+        $return .= '</td></tr>';
+
+        return $return;
     }
-    //сохраняем в базу
-    function ConvertToDB($arProperty, $value){
+
+    function ConvertToDB($arProperty, $value)
+    {
+        $value['DESCRIPTION'] = serialize($value['DESCRIPTION']);
         return $value;
     }
-    //читаем из базы
-    function ConvertFromDB($arProperty, $value){
+
+    function ConvertFromDB($arProperty, $value)
+    {
         return $value;
     }
 }
