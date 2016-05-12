@@ -47,7 +47,7 @@ class CCustomTypeDesignerDate
         $return = '<tr><td>';
 
         $return .= '<div>Дизайнер: <select name="'.$strHTMLControlName['DESCRIPTION'] . '[NAME]">';
-        $return .= '<option value="">(выберите квалификацию)</option>';
+        $return .= '<option value="">(выберите дизайнера)</option>';
         while ($designer = $designers->GetNext()){
             $return .= '<option value="' .$designer["ID"]. '"';
             if ($designer["ID"] == $value['DESCRIPTION']['NAME']){
