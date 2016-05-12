@@ -16,6 +16,9 @@
   },
   "autoload": {
     "classmap":["src/CCustomTypes.php"],
-    "files": ["src/connection.php"]
+    "files": ["src/connection.php"],
+    "psr-4": {
+      "Sapfira71\\": "src/"
+    }
   }
 }
